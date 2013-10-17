@@ -1,6 +1,6 @@
 {
   "name": "angular-sham-spinner",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "angular-sham-spinner.js",
   "dependencies": {
     "sham-spinner":  "*"
