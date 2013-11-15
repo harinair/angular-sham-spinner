@@ -1,4 +1,5 @@
-/* angular-sham-spinner version 0.0.1
+/**
+ * angular-sham-spinner version 0.0.1
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
@@ -6,104 +7,118 @@
 
 'use strict';
 
-// Declare app level module which depends on filters, and services
+// Declare app level module
 var app = angular.module('angularShamSpinner', []);
 
 app.config(['$httpProvider', function ($httpProvider) {
-    var $http,
-        interceptor = ['$q', '$injector', function ($q, $injector) {
-            var notificationChannel;
+    // use injector everywhere to avoid circular dependency
+    var _notificationChannel;
+    var _http;
+    var _notifyRequestEnd = function($injector) {
+        _http = _http || $injector.get('$http');
+        if (_http.pendingRequests.length < 1) {
+            _notificationChannel = _notificationChannel || $injector.get('angularShamNotification');
+            // send notification requests are complete
+            _notificationChannel.requestEnded();
+        }
+    };
+    var _notifyRequestStart = function($injector) {
+        _notificationChannel = _notificationChannel || $injector.get('angularShamNotification');
+        // send notification requests started
+        _notificationChannel.requestStarted();
+    };
 
-            function success(response) {
-                $http = $http || $injector.get('$http');
-                if ($http.pendingRequests.length < 1) {
-                    // get angularShamNotification via $injector because of circular dependency problem
-                    notificationChannel = notificationChannel || $injector.get('angularShamNotification');
-                    // send a notification requests are complete
-                    notificationChannel.requestEnded();
-                }
-                return response;
-            }
+    var interceptor = ['$q', '$injector', function ($q, $injector) {
+        function success(response) {
+            _notifyRequestEnd($injector);
+            return response;
+        }
 
-            function error(response) {
-                // get $http via $injector because of circular dependency problem
-                $http = $http || $injector.get('$http');
-                // don't send notification until all requests are complete
-                if ($http.pendingRequests.length < 1) {
-                    // get angularShamNotification via $injector because of circular dependency problem
-                    notificationChannel = notificationChannel || $injector.get('angularShamNotification');
-                    // send a notification requests are complete
-                    notificationChannel.requestEnded();
-                }
-                return $q.reject(response);
-            }
+        function error(response) {
+            _notifyRequestEnd($injector);
+            return $q.reject(response);
+        }
 
-            return function (promise) {
-                // get angularShamNotification via $injector because of circular dependency problem
-                notificationChannel = notificationChannel || $injector.get('angularShamNotification');
-                // send a notification requests are complete
-                notificationChannel.requestStarted();
-                return promise.then(success, error);
-            }
-        }];
-
+        return function (promise) {
+            _notifyRequestStart($injector);
+            return promise.then(success, error);
+        }
+    }];
     $httpProvider.responseInterceptors.push(interceptor);
 }]);
 
 app.factory('angularShamNotification', ['$rootScope', function($rootScope){
     // private notification messages
-    var _START_REQUEST_ = '_START_REQUEST_';
-    var _END_REQUEST_ = '_END_REQUEST_';
-
-    // publish start request notification
-    var requestStarted = function() {
-        $rootScope.$broadcast(_START_REQUEST_);
-    };
-    // publish end request notification
-    var requestEnded = function() {
-        $rootScope.$broadcast(_END_REQUEST_);
-    };
-    // subscribe to start request notification
-    var onRequestStarted = function($scope, handler){
-        $scope.$on(_START_REQUEST_, function(event){
-            handler();
-        });
-    };
-    // subscribe to end request notification
-    var onRequestEnded = function($scope, handler){
-        $scope.$on(_END_REQUEST_, function(event){
-            handler();
-        });
-    };
+    var _START_REQUEST_ = 'angularShamNotification:_START_REQUEST_';
+    var _END_REQUEST_ = 'angularShamNotification:_END_REQUEST_';
 
     return {
-        requestStarted:  requestStarted,
-        requestEnded: requestEnded,
-        onRequestStarted: onRequestStarted,
-        onRequestEnded: onRequestEnded
+        /**
+         * This method shall be called when an HTTP request
+         * started. This is called by the initiating component - the
+         * HTTP interceptor.
+         */
+        requestStarted: function() {
+            $rootScope.$broadcast(_START_REQUEST_);
+        },
+
+        /**
+         * This method shall be called when an HTTP request
+         * ends. This is called by the initiating component - the
+         * HTTP interceptor.
+         */
+        requestEnded: function() {
+            $rootScope.$broadcast(_END_REQUEST_);
+        },
+
+        /**
+         * This method is invoked by any listener that wants to be
+         * notified of the request start.
+         *
+         * @param $scope
+         * @param handler
+         */
+        onRequestStarted: function(handler) {
+            $rootScope.$on(_START_REQUEST_, function(event){
+                handler(event);
+            });
+        },
+
+        /**
+         * This method is invoked by any listener that wants to be
+         * notified of the request end.
+         *
+         * @param $scope
+         * @param handler
+         */
+        onRequestEnded: function(handler) {
+            $rootScope.$on(_END_REQUEST_, function(event){
+                handler(event);
+            });
+        }
     };
 }]);
 
 app.directive('shamSpinner', ['angularShamNotification', function (angularShamNotification) {
     return {
-        restrict: "A",
-        link: function (scope, element) {
+        restrict: "E",
+        template: '<div class="sham-spinner-container"><span class="spinner"></span><span class="text">{{text}}</span></div>',
+        link: function (scope, element, attrs) {
+            scope.text = attrs.text;
             // hide the element initially
             element.hide();
 
-            var startRequestHandler = function() {
+            // subscribe to request started notification
+            angularShamNotification.onRequestStarted(function() {
                 // got the request start notification, show the element
                 element.show();
-            };
+            });
 
-            var endRequestHandler = function() {
-                // got the request start notification, show the element
+            // subscribe to request ended notification
+            angularShamNotification.onRequestEnded(function() {
+                // got the request end notification, hide the element
                 element.hide();
-            };
-
-            angularShamNotification.onRequestStarted(scope, startRequestHandler);
-
-            angularShamNotification.onRequestEnded(scope, endRequestHandler);
+            });
         }
     };
 }]);
