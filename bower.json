@@ -1,8 +1,11 @@
 {
-  "name": "angular-sham-spinner",
-  "version": "0.0.3",
-  "main": "angular-sham-spinner.js",
-  "dependencies": {
-    "sham-spinner":  "*"
-  }
+    "author": "Hari Gangadharan",
+    "name": "angular-sham-spinner",
+    "homepage": "https://github.com/harinair/angular-sham-spinner",
+    "description": "Angular Sham Spinner - easily integrate Sham spinner in AngularJS Applications",
+    "version": "0.0.4",
+    "main": "angular-sham-spinner.js",
+    "dependencies": {
+        "sham-spinner": "*"
+    }
 }

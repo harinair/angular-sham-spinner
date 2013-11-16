@@ -1,5 +1,5 @@
 /**
- * angular-sham-spinner version 0.0.1
+ * angular-sham-spinner version 0.0.4
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
@@ -14,6 +14,7 @@ app.config(['$httpProvider', function ($httpProvider) {
     // use injector everywhere to avoid circular dependency
     var _notificationChannel;
     var _http;
+
     var _notifyRequestEnd = function($injector) {
         _http = _http || $injector.get('$http');
         if (_http.pendingRequests.length < 1) {
@@ -75,7 +76,6 @@ app.factory('angularShamNotification', ['$rootScope', function($rootScope){
          * This method is invoked by any listener that wants to be
          * notified of the request start.
          *
-         * @param $scope
          * @param handler
          */
         onRequestStarted: function(handler) {
@@ -88,7 +88,6 @@ app.factory('angularShamNotification', ['$rootScope', function($rootScope){
          * This method is invoked by any listener that wants to be
          * notified of the request end.
          *
-         * @param $scope
          * @param handler
          */
         onRequestEnded: function(handler) {
@@ -99,6 +98,10 @@ app.factory('angularShamNotification', ['$rootScope', function($rootScope){
     };
 }]);
 
+/**
+ * The Sham Spinner angular directive. This will render appropriate sham
+ * spinner and show/hide on ajax call start/end respectively.
+ */
 app.directive('shamSpinner', ['angularShamNotification', function (angularShamNotification) {
     return {
         restrict: "E",
