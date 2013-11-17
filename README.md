@@ -5,6 +5,7 @@ Spinner to Angular applications easily.
 
 ### Requirements
 - sham-spinner
+- angularjs 1.2.0 (for latest version)
 
 ### Installation
 
@@ -37,32 +38,66 @@ angular.module('greenhornApp', [
 ```
 
 Import Sham Spinner scss and add appropriate style for class
-sham-spinner-container, spinner and text.
+sham-spinner-container, spinner and text. The following style will
+show the spinner on the top left corner.
 
 ```scss
 @import "sham-spinner/sham-spinner";
+sham-spinner {
+    .sham-spinner-container {
+        padding: 2px 15px;
+        background-color: #000;
+        border: 1px solid #333;
+        color: #ffffff;
+        position: fixed;
+        left: 5px;
+        top: 0px;
+        z-index: 5000;
+    
+        .spinner {
+            display: block;
+            float: left;
+            width: 50px;
+            height: 50px;
+            @include sham-spinner-spokes(LightCoral, 44px, 2s);
+        }
+        .text {
+            padding: 10px 12px;
+            float: left;
+            font-weight: 700;
+        }
+    }
+}
+```
 
-.sham-spinner-container {
-  padding: 2px 15px;
-  background-color: #000;
-  border: 1px solid #333;
-  color: #ffffff;
-  position: fixed;
-  left: 5px;
-  top: 0px;
+The following is another example where the spinner is shown in the 
+middle of the page blocking the view.
+
+```scss
+sham-spinner{
+  background: #333;
+  opacity: 0.8;
+  position: absolute;
+  width: 100%;
+  height: 100%;
   z-index: 5000;
+  .sham-spinner-container{
+    border: none;
+    background-color: #000000;
+    display: table;
+    position: relative;
+    width: auto;
+    top: 45%;
+    margin: auto;
+    @include border-radius(5px);
 
-  .spinner {
-    display: block;
-    float: left;
-    width: 50px;
-    height: 50px;
-    @include sham-spinner-spokes(LightCoral, 44px, 2s);
-  }
-  .text {
-    padding: 10px 12px;
-    float: left;
-    font-weight: 700;
+    .spinner {
+      display: block;
+      float: left;
+      width: 50px;
+      height: 50px;
+      @include sham-spinner-spokes(LightCoral, 44px, 2s);
+    }
   }
 }
 ```
