@@ -1,54 +1,53 @@
 /**
- * angular-sham-spinner version 0.0.4
+ * angular-sham-spinner version 0.0.5
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
  */
-
 'use strict';
 
 // Declare app level module
 var app = angular.module('angularShamSpinner', []);
 
 app.config(['$httpProvider', function ($httpProvider) {
-    // use injector everywhere to avoid circular dependency
-    var _notificationChannel;
-    var _http;
-
-    var _notifyRequestEnd = function($injector) {
-        _http = _http || $injector.get('$http');
-        if (_http.pendingRequests.length < 1) {
-            _notificationChannel = _notificationChannel || $injector.get('angularShamNotification');
-            // send notification requests are complete
-            _notificationChannel.requestEnded();
-        }
-    };
-    var _notifyRequestStart = function($injector) {
-        _notificationChannel = _notificationChannel || $injector.get('angularShamNotification');
-        // send notification requests started
-        _notificationChannel.requestStarted();
-    };
-
-    var interceptor = ['$q', '$injector', function ($q, $injector) {
-        function success(response) {
-            _notifyRequestEnd($injector);
-            return response;
-        }
-
-        function error(response) {
-            _notifyRequestEnd($injector);
-            return $q.reject(response);
-        }
-
-        return function (promise) {
-            _notifyRequestStart($injector);
-            return promise.then(success, error);
-        }
+    var interceptor = ['$injector', function ($injector) {
+        return $injector.get('AngularShamInterceptor');
     }];
-    $httpProvider.responseInterceptors.push(interceptor);
+    $httpProvider.interceptors.push(interceptor);
 }]);
 
-app.factory('angularShamNotification', ['$rootScope', function($rootScope){
+app.factory('AngularShamInterceptor', [
+    'AngularShamNotification',
+    '$injector',
+    '$q', function(angularShamNotification, $injector, $q) {
+        var _http = null;
+        var _requestEnded = function() {
+            _http = _http || $injector.get('$http');
+            if (_http.pendingRequests.length < 1) {
+                // send notification requests are complete
+                angularShamNotification.requestEnded();
+            }
+        };
+        return {
+            request: function(config) {
+                angularShamNotification.requestStarted();
+                return config;
+            },
+
+            response: function(response) {
+                _requestEnded();
+                return response;
+            },
+
+            responseError: function(reason) {
+                _requestEnded();
+                return $q.reject(reason);
+            }
+        }
+    }]
+);
+
+app.factory('AngularShamNotification', ['$rootScope', function($rootScope){
     // private notification messages
     var _START_REQUEST_ = 'angularShamNotification:_START_REQUEST_';
     var _END_REQUEST_ = 'angularShamNotification:_END_REQUEST_';
@@ -102,7 +101,7 @@ app.factory('angularShamNotification', ['$rootScope', function($rootScope){
  * The Sham Spinner angular directive. This will render appropriate sham
  * spinner and show/hide on ajax call start/end respectively.
  */
-app.directive('shamSpinner', ['angularShamNotification', function (angularShamNotification) {
+app.directive('shamSpinner', ['AngularShamNotification', function (angularShamNotification) {
     return {
         restrict: "E",
         template: '<div class="sham-spinner-container"><span class="spinner"></span><span class="text">{{text}}</span></div>',
