@@ -74,30 +74,32 @@ The following is another example where the spinner is shown in the
 middle of the page blocking the view.
 
 ```scss
+@import "sham-spinner/sham-spinner";
 sham-spinner{
-  background: #333;
-  opacity: 0.8;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 5000;
-  .sham-spinner-container{
-    border: none;
-    background-color: #000000;
-    display: table;
-    position: relative;
-    width: auto;
-    top: 45%;
-    margin: auto;
-    @include border-radius(5px);
+    background: #333;
+    opacity: 0.8;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
 
-    .spinner {
-      display: block;
-      float: left;
-      width: 50px;
-      height: 50px;
-      @include sham-spinner-spokes(LightCoral, 44px, 2s);
+    .sham-spinner-container{
+        border: none;
+        background-color: #000000;
+        display: table;
+        position: relative;
+        width: auto;
+        top: 45%;
+        margin: auto;
+        @include border-radius(5px);
+    
+        .spinner {
+            display: block;
+            float: left;
+            width: 50px;
+            height: 50px;
+            @include sham-spinner-spokes(LightCoral, 44px, 2s);
+        }
     }
-  }
 }
 ```
