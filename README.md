@@ -29,7 +29,7 @@ attribute text will be shown beside the spinner.
 Enable the angularShamSpinner module in your app.js or any application config
 javascript.
 ```js
-angular.module('greenhornApp', [
+angular.module('yourApp', [
         'ngRoute',
         'ngResource',
         'ngSanitize',
@@ -102,4 +102,36 @@ sham-spinner{
         }
     }
 }
+```
+
+### Disabling Sham Spinner
+
+Sometimes it may be necessary to disable the spinner. For example, if the spinner is blocking the
+view and you are using AJAX to do validation of user input, it may be a good idea to disable the
+spinner until the current call is complete.
+
+In your controller, directive or service, you can inject the AngularShamNotification.
+The AngularShamNotification has a method: setDisabled(disable, resetTime). If resetTime
+(in milliseconds) is provided, the spinner will enable itself after the resetTime. Set resetTime
+to a negative number to disable automatic reset. In that case, you may have to manually reset
+the spinner by invoking this method with 'false' argument.
+
+
+Example:
+
+```js
+angular.module('yourApp').controller('ghValidateEnrolled', [
+    'AngularShamNotification',
+    'YourSomeService', function(angularShamNotification, yourSomeService) {
+        // disable spinner -do not reset automatically
+        angularShamNotification.setDisabled(true, -1);
+        yourSomeService.doAnApiCall()
+        .then(function(data) {
+            angularShamNotification.setDisabled(false);
+        }, function(reason) {
+            angularShamNotification.setDisabled(false);
+        });
+    }]
+);
+
 ```
