@@ -105,6 +105,7 @@ sham-spinner{
 ```
 
 ### Disabling Sham Spinner
+(Available from release 0.0.6)
 
 Sometimes it may be necessary to disable the spinner. For example, if the spinner is blocking the
 view and you are using AJAX to do validation of user input, it may be a good idea to disable the
