@@ -136,3 +136,7 @@ angular.module('yourApp').controller('ghValidateEnrolled', [
 );
 
 ```
+
+### License
+
+The MIT License
