@@ -1,5 +1,5 @@
 /**
- * angular-sham-spinner version 0.0.6
+ * angular-sham-spinner version 0.0.7
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
