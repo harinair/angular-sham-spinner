@@ -22,7 +22,7 @@ attribute text will be shown beside the spinner.
 ```html
     <sham-spinner text="Loading..."></sham-spinner>
 
-    <script src="bower_components/angular-sham-spinner/angular-sham.spinner.js"></script>
+    <script src="bower_components/angular-sham-spinner/angular-sham-spinner.js"></script>
 
 ```
 
