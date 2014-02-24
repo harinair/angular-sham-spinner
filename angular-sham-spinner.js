@@ -138,22 +138,22 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
 app.directive('shamSpinner', ['AngularShamNotification', function (angularShamNotification) {
     return {
         restrict: "E",
-        template: '<div class="sham-spinner-container"><span class="spinner"></span><span class="text">{{text}}</span></div>',
+        template: '<div class="sham-spinner-container" ng-show="loader"><span class="spinner"></span><span class="text">{{text}}</span></div>',
         link: function (scope, element, attrs) {
             scope.text = attrs.text;
             // hide the element initially
-            element.hide();
+            scope.loader = false;
 
             // subscribe to request started notification
             angularShamNotification.onRequestStarted(function() {
                 // got the request start notification, show the element
-                element.show();
+                scope.loader = true;
             });
 
             // subscribe to request ended notification
             angularShamNotification.onRequestEnded(function() {
                 // got the request end notification, hide the element
-                element.hide();
+                scope.loader = false;
             });
         }
     };
