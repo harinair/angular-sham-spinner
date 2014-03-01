@@ -1,7 +1,11 @@
 # Angular Sham Spinner
-
 This contains sham-spinner directive that allows you to add Identified Sham
 Spinner to Angular applications easily.
+
+###Note:
+
+In 0.10 and above the sham-spinner element will not be hidden. A new div sham-spinner-blocker is added. Checkout the sample scss on how to configure it.
+
 
 ### Requirements
 - sham-spinner
@@ -43,7 +47,7 @@ show the spinner on the top left corner.
 
 ```scss
 @import "sham-spinner/sham-spinner";
-sham-spinner {
+.sham-spinner-blocker {
     .sham-spinner-container {
         padding: 2px 15px;
         background-color: #000;
@@ -75,7 +79,7 @@ middle of the page blocking the view.
 
 ```scss
 @import "sham-spinner/sham-spinner";
-sham-spinner{
+.sham-spinner-blocker {
     background: #333;
     opacity: 0.8;
     position: absolute;
@@ -83,7 +87,7 @@ sham-spinner{
     height: 100%;
     z-index: 5000;
 
-    .sham-spinner-container{
+    .sham-spinner-container {
         border: none;
         background-color: #000000;
         display: table;

@@ -1,5 +1,5 @@
 /**
- * angular-sham-spinner version 0.0.9
+ * angular-sham-spinner version 0.0.10
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
@@ -138,7 +138,7 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
 app.directive('shamSpinner', ['AngularShamNotification', function (angularShamNotification) {
     return {
         restrict: "E",
-        template: '<div class="sham-spinner-container" ng-show="loader"><span class="spinner"></span><span class="text">{{text}}</span></div>',
+        template: '<div class="sham-spinner-blocker" ng-show="loader"><div class="sham-spinner-container"><span class="spinner"></span><span class="text">{{text}}</span></div></div>',
         link: function (scope, element, attrs) {
             scope.text = attrs.text;
             // hide the element initially
