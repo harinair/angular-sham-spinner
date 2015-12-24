@@ -9,7 +9,7 @@ In 0.10 and above the sham-spinner element will not be hidden. A new div sham-sp
 
 ### Requirements
 - sham-spinner
-- angularjs 1.2.0 (for latest version)
+- angularjs 1.2.0 (or latest version)
 
 ### Installation
 

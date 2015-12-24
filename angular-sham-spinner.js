@@ -1,5 +1,5 @@
 /**
- * angular-sham-spinner version 0.0.10
+ * angular-sham-spinner version 0.0.11
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
@@ -53,6 +53,7 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
     var _END_REQUEST_ = 'angularShamNotification:_END_REQUEST_';
     var _disabled = false;
     var _lastTimeout = null;
+    var loaderShown = false;
 
     return {
         /**
@@ -61,7 +62,8 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
          * HTTP interceptor.
          */
         requestStarted: function() {
-            if (!_disabled) {
+            if (!_disabled || !loaderShown) {
+                loaderShown = true;
                 $rootScope.$broadcast(_START_REQUEST_);
             }
         },
@@ -72,7 +74,10 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
          * HTTP interceptor.
          */
         requestEnded: function() {
-            $rootScope.$broadcast(_END_REQUEST_);
+            if (loaderShown) {
+                loaderShown = false;
+                $rootScope.$broadcast(_END_REQUEST_);
+            }
         },
 
         /**
