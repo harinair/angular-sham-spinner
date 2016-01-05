@@ -3,7 +3,7 @@
     "name": "angular-sham-spinner",
     "homepage": "https://github.com/harinair/angular-sham-spinner",
     "description": "Angular Sham Spinner - easily integrate Sham spinner in AngularJS Applications",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "main": "angular-sham-spinner.js",
     "dependencies": {
         "sham-spinner": "*",
