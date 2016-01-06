@@ -1,5 +1,5 @@
 /**
- * angular-sham-spinner version 0.0.12
+ * angular-sham-spinner version 0.0.13
  * License: MIT.
  * Created by Hari Gangadharan based on the code by Jim Lavin
  * http://codingsmackdown.tv/blog/2013/04/20/using-response-interceptors-to-show-and-hide-a-loading-widget-redux
@@ -53,7 +53,6 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
     var _END_REQUEST_ = 'angularShamNotification:_END_REQUEST_';
     var _disabled = false;
     var _lastTimeout = null;
-    var loaderShown = false;
 
     return {
         /**
@@ -62,8 +61,7 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
          * HTTP interceptor.
          */
         requestStarted: function() {
-            if (!_disabled && !loaderShown) {
-                loaderShown = true;
+            if (!_disabled) {
                 $rootScope.$broadcast(_START_REQUEST_);
             }
         },
@@ -74,10 +72,7 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
          * HTTP interceptor.
          */
         requestEnded: function() {
-            if (loaderShown) {
-                loaderShown = false;
-                $rootScope.$broadcast(_END_REQUEST_);
-            }
+            $rootScope.$broadcast(_END_REQUEST_);
         },
 
         /**
@@ -140,7 +135,8 @@ app.factory('AngularShamNotification', ['$rootScope', '$timeout', function($root
  * The Sham Spinner angular directive. This will render appropriate sham
  * spinner and show/hide on ajax call start/end respectively.
  */
-app.directive('shamSpinner', ['AngularShamNotification', function (angularShamNotification) {
+app.directive('shamSpinner', ['AngularShamNotification', '$timeout', function (angularShamNotification, $timeout) {
+    var _timeout = undefined;
     return {
         restrict: "E",
         template: '<div class="sham-spinner-blocker" ng-show="loader"><div class="sham-spinner-container"><span class="spinner"></span><span class="text">{{text}}</span></div></div>',
@@ -158,7 +154,13 @@ app.directive('shamSpinner', ['AngularShamNotification', function (angularShamNo
             // subscribe to request ended notification
             angularShamNotification.onRequestEnded(function() {
                 // got the request end notification, hide the element
-                scope.loader = false;
+                if (_timeout) {
+                    $timeout.cancel(_timeout);
+                }
+                _timeout = $timeout(function () {
+                    scope.loader = false;
+                    scope.$digest();
+                }, 500);
             });
         }
     };
